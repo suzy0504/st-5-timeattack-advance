@@ -9,30 +9,30 @@ export default function Detail() {
 
   // TODO: useQuery 로 리팩터링 하세요.
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [error, setError] = useState(null);
+  // const [data, setData] = useState(null);
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const response = await todoApi(`/todos/${id}`);
-        setData(response.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const {
+    data: todos,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["id"],
+    queryFn: fetchDetail,
+  });
 
-    fetchDetail();
-  }, [id]);
+  const fetchDetail = async () => {
+    const response = await todoApi(`/todos/${id}`);
+    return setData(response.data);
+  };
 
-  if (isLoading) return <div style={{ fontSize: 36 }}>로딩중...</div>;
-  if (error) {
-    console.error(error);
+  if (isPending) return <div style={{ fontSize: 36 }}>로딩중...</div>;
+
+  if (isError) {
+    console.error(isError);
     return (
-      <div style={{ fontSize: 24 }}>에러가 발생했습니다: {error.message}</div>
+      <div style={{ fontSize: 24 }}>에러가 발생했습니다: {isError.message}</div>
     );
   }
 
